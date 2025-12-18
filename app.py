@@ -1,4 +1,7 @@
 import pandas as pd
+import streamlit as st
+import plotly.express as px
+
 
 def load_data():
     df = pd.read_csv("data/employee_feedback.csv")
@@ -28,34 +31,100 @@ def categorize_issue(feedback_text):
     else:
         return "Other"
 
-if __name__ == "__main__":
-    data = load_data()
+st.set_page_config(
+    page_title="Employee Feedback Dashboard",
+    layout="wide"
+)
 
-    # Applying sentiment classification
-    data["sentiment"] = data["rating"].apply(classify_sentiment)
+st.title("Employee Feedback Analysis & Action Dashboard")
 
-    # Applying issue categorization
-    data["issue_category"] = data["feedback_text"].apply(categorize_issue)
+data = load_data()
 
-    # Sentiment distribution
-    sentiment_counts = data["sentiment"].value_counts()
-    print("\nSentiment Distribution:")
-    print(sentiment_counts)
+# Apply sentiment classification
+data["sentiment"] = data["rating"].apply(classify_sentiment)
 
-    # Issue category distribution
-    issue_counts = data["issue_category"].value_counts()
-    print("\nIssue Category Distribution:")
-    print(issue_counts)
+# Apply issue categorization
+data["issue_category"] = data["feedback_text"].apply(categorize_issue)
 
-    # Department-wise issue analysis
-    dept_issue_counts = pd.crosstab(
-        data["department"], data["issue_category"]
-    )
-    print("\nDepartment-wise Issue Breakdown:")
-    print(dept_issue_counts)
+st.subheader("Raw Feedback Data (Preview)")
+st.dataframe(data.head())
 
-    # getting results
-    print(data[["department", "rating", "sentiment", "issue_category"]].head())
+st.subheader("Key Insights")
+
+# Sentiment distribution
+sentiment_counts = data["sentiment"].value_counts()
+st.write("### Sentiment Distribution")
+
+sentiment_df = sentiment_counts.reset_index()
+sentiment_df.columns = ["Sentiment", "Count"]
+
+st.dataframe(
+    sentiment_df,
+    use_container_width=True,
+    hide_index=True
+)
+
+# Issue category distribution
+issue_counts = data["issue_category"].value_counts()
+st.write("### Issue Category Distribution")
+
+issue_df = issue_counts.reset_index()
+issue_df.columns = ["Issue Category", "Count"]
+
+st.dataframe(
+    issue_df,
+    use_container_width=True,
+    hide_index=True
+)
+
+# Department-wise issue breakdown
+dept_issue_counts = pd.crosstab(
+    data["department"], data["issue_category"]
+)
+
+st.write("### Department-wise Issue Breakdown")
+st.dataframe(dept_issue_counts)
+
+st.write("### Sentiment Distribution Chart")
+
+sentiment_fig = px.bar(
+    sentiment_df,
+    x="Sentiment",
+    y="Count",
+    text="Count",
+    title="Employee Sentiment Overview"
+)
+
+sentiment_fig.update_traces(textposition="outside")
+sentiment_fig.update_layout(
+    xaxis_title="Sentiment",
+    yaxis_title="Number of Responses",
+    uniformtext_minsize=10,
+    uniformtext_mode="hide"
+)
+
+st.plotly_chart(sentiment_fig, use_container_width=True)
+
+st.write("### Issue Category Distribution Chart")
+
+issue_fig = px.bar(
+    issue_df,
+    x="Issue Category",
+    y="Count",
+    text="Count",
+    title="Frequency of Reported Issues"
+)
+
+issue_fig.update_traces(textposition="outside")
+issue_fig.update_layout(
+    xaxis_title="Issue Category",
+    yaxis_title="Number of Responses",
+    uniformtext_minsize=10,
+    uniformtext_mode="hide"
+)
+
+st.plotly_chart(issue_fig, use_container_width=True)
+
 
 
  
