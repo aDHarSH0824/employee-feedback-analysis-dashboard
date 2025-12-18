@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-
 def load_data():
     df = pd.read_csv("data/employee_feedback.csv")
     return df
@@ -46,10 +45,8 @@ st.markdown(
 
 data = load_data()
 
-# Apply sentiment classification
 data["sentiment"] = data["rating"].apply(classify_sentiment)
 
-# Apply issue categorization
 data["issue_category"] = data["feedback_text"].apply(categorize_issue)
 
 st.subheader("Raw Feedback Data (Preview)")
@@ -57,7 +54,6 @@ st.dataframe(data.head())
 
 st.subheader("Key Insights")
 
-# Sentiment distribution
 sentiment_counts = data["sentiment"].value_counts()
 st.write("### Sentiment Distribution")
 
@@ -70,7 +66,6 @@ st.dataframe(
     hide_index=True
 )
 
-# Issue category distribution
 issue_counts = data["issue_category"].value_counts()
 st.write("### Issue Category Distribution")
 
@@ -83,7 +78,6 @@ st.dataframe(
     hide_index=True
 )
 
-# Department-wise issue breakdown
 dept_issue_counts = pd.crosstab(
     data["department"], data["issue_category"]
 )
