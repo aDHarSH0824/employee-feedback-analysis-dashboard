@@ -37,6 +37,23 @@ if __name__ == "__main__":
     # Applying issue categorization
     data["issue_category"] = data["feedback_text"].apply(categorize_issue)
 
+    # Sentiment distribution
+    sentiment_counts = data["sentiment"].value_counts()
+    print("\nSentiment Distribution:")
+    print(sentiment_counts)
+
+    # Issue category distribution
+    issue_counts = data["issue_category"].value_counts()
+    print("\nIssue Category Distribution:")
+    print(issue_counts)
+
+    # Department-wise issue analysis
+    dept_issue_counts = pd.crosstab(
+        data["department"], data["issue_category"]
+    )
+    print("\nDepartment-wise Issue Breakdown:")
+    print(dept_issue_counts)
+
     # getting results
     print(data[["department", "rating", "sentiment", "issue_category"]].head())
 
