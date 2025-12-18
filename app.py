@@ -36,7 +36,13 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Employee Feedback Analysis & Action Dashboard")
+st.title("Employee Feedback Analysis & Action Recommendation Dashboard")
+
+st.markdown(
+    "This dashboard analyzes employee feedback to highlight sentiment trends, key issue areas, "
+    "and department-level insights for leadership decision-making."
+)
+
 
 data = load_data()
 
@@ -125,6 +131,16 @@ issue_fig.update_layout(
 
 st.plotly_chart(issue_fig, use_container_width=True)
 
+st.subheader("Action-Oriented Recommendations")
+
+if issue_counts.get("Workload", 0) >= 3:
+    st.write("- **Workload Management:** High frequency of workload-related feedback suggests a need to review deadlines, staffing levels, and task allocation.")
+
+if issue_counts.get("Tools & Process", 0) >= 2:
+    st.write("- **Process Improvement:** Feedback indicates inefficiencies in tools or workflows. Consider upgrading systems or automating repetitive tasks.")
+
+if sentiment_counts.get("Negative", 0) >= sentiment_counts.get("Positive", 0):
+    st.write("- **Employee Engagement:** A relatively high number of negative responses suggests the need for targeted engagement initiatives and follow-up surveys.")
 
 
  
